@@ -18,7 +18,6 @@ class Signals(QtCore.QObject):
     overCanvas = QtCore.pyqtSignal([int, int])
 
     updatePencilSize = QtCore.pyqtSignal([int])
-    updateEraserSize = QtCore.pyqtSignal([int])
 
     hull_selection = QtCore.pyqtSignal([bool])
 

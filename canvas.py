@@ -44,7 +44,7 @@ class Canvas(QWidget):
 
     def add_curve(self):
         c = Curve(curve_color=self.context.curve_color, points_color=self.context.points_color,
-                  hull_color=self.context.hull_color, size=self.context.pencilSize,
+                  hull_color=self.context.hull_color, size=self.context.pencil_size,
                   hull_selection=self.context.hull_selection)
         self.curves.append(c)
 
@@ -99,25 +99,25 @@ class Canvas(QWidget):
             self.curve.translate(dx, dy)
             pos[:] = p[:]
 
-        if self.context.currentTool == Tools.Grab:
+        if self.context.current_tool == Tools.Grab:
             self.tracking = move
-        elif self.context.currentTool == Tools.Pencil:
+        elif self.context.current_tool == Tools.Pencil:
             self.curve.append((event.x(), event.y()))
             self.update()
-        elif self.context.currentTool == Tools.Selection:
+        elif self.context.current_tool == Tools.Selection:
             if not self.curve.control_points:
                 return
             pp = np.array(self.curve.control_points)
             pp = ((pp[:, 0] - event.x())**2 + (pp[:, 1] - event.y())**2)
             if pp.min() < 200:
                 self.tracking = lambda p: self.curve.change(pp.argmin(), p)
-        elif self.context.currentTool == Tools.Eraser:
+        elif self.context.current_tool == Tools.Eraser:
             pp = np.array(self.curve.control_points)
             pp = ((pp[:, 0] - event.x()) ** 2 + (pp[:, 1] - event.y()) ** 2)
             if pp.min() < 200:
                 self.curve.pop(pp.argmin())
                 self.update()
-        elif self.context.currentTool == Tools.Slice:
+        elif self.context.current_tool == Tools.Slice:
             pp = self.curve.curve_points
             pp = ((pp[:, 0] - event.x()) ** 2 + (pp[:, 1] - event.y()) ** 2)
             if pp.min() < 100:
@@ -125,13 +125,13 @@ class Canvas(QWidget):
                 self.curves.append(new_curve)
                 self.signals.add_curves.emit()
                 self.update()
-        elif self.context.currentTool == Tools.Copy:
+        elif self.context.current_tool == Tools.Copy:
             new_curve = self.curve.copy()
             new_curve.translate(10, 10)  # for visual effect
             self.curves.append(new_curve)
             self.signals.add_curves.emit()
             self.update()
-        elif self.context.currentTool == Tools.Join:  # not working
+        elif self.context.current_tool == Tools.Join:  # not working
             def high_light(p):
                 move(p)
                 curve_end_points = [self.curve.control_points[0], self.curve.control_points[-1]]
@@ -148,7 +148,7 @@ class Canvas(QWidget):
                     self.update()
             end_points = np.array(list(chain.from_iterable((c.control_points[0], c.control_points[-1]) for c in self.curves)))
             self.tracking = high_light
-        elif self.context.currentTool == Tools.Rotate:
+        elif self.context.current_tool == Tools.Rotate:
             def rot(p):
                 curr_pos_x, curr_pos_y = p - self.curve.center
                 alpha = np.arctan2(curr_pos_y, curr_pos_x) - alpha0
@@ -165,14 +165,14 @@ class Canvas(QWidget):
 
     def mouseReleaseEvent(self, event):
         self.tracking = None
-        if self.context.currentTool == Tools.Join and self.high_light_points:
+        if self.context.current_tool == Tools.Join and self.high_light_points:
             curve_idx, curve_end, head = self.high_light_points[-1]
             self.high_light_points = []
             v1 = self.curves[curve_idx].control_points[curve_end]
             v2 = self.curves[curve_idx].control_points[curve_end + 1 if curve_end == 0 else curve_end - 1]
             self.curve.join(head, v1, self.context.join_type, v2)
             self.update()
-        elif self.context.currentTool == Tools.Rotate:
+        elif self.context.current_tool == Tools.Rotate:
             self.curve.update_tmp_points()
 
     def update(self):
@@ -182,7 +182,7 @@ class Canvas(QWidget):
         cursors = [self.context.grab_cur, self.context.pencil_cur, self.context.eraser_cur, 0]
 
         for i in range(len(cursors)):
-            if self.context.currentTool == i:
+            if self.context.current_tool == i:
                 if cursors[i] == 0:
                     self.unsetCursor()
                 else:
@@ -190,7 +190,7 @@ class Canvas(QWidget):
 
     def update_curve(self):
         if self.curve is not None:
-            self.curve.size = self.context.pencilSize
+            self.curve.size = self.context.pencil_size
             if self.context.selected_color == 'curve':
                 self.curve.update_color(self.context.selected_color, self.context.curve_color)
             elif self.context.selected_color == 'points':

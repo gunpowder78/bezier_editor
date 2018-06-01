@@ -21,7 +21,7 @@ class Context:
                         [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
                         [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
-        self.currentTool = 1
+        self.current_tool = 1
         self.curves_to_remove = []
         self.current_curve = None
 
@@ -31,7 +31,8 @@ class Context:
         self.eraser_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/erasericon.png"), 2, 17)
         self.grab_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/grab.png"), 2, 17)
 
-        self.loadDefaults()
+        self.pencil_size = 3
+
         self.hull_selection = True
 
         self.curve_color = QtGui.QColor(QtCore.Qt.red)
@@ -55,16 +56,11 @@ class Context:
 
     def setPencilSize(self, size):
         if size < 10 and size > 0:
-            self.pencilSize = size
-            self.signals.updatePencilSize.emit(self.pencilSize)
+            self.pencil_size = size
+            self.signals.updatePencilSize.emit(self.pencil_size)
 
     def set_join_type(self, x):
         self.join_type = x
-
-    def setEraserSize(self, size):
-        if size < 10 and size > 0:
-            self.eraserSize = size
-            self.signals.updateEraserSize.emit(self.eraserSize)
 
     def change_curve_color(self, c):
 
@@ -82,11 +78,5 @@ class Context:
         self.signals.updateColor.emit()
 
     def changeCurrentTool(self, index):
-        self.currentTool = index
+        self.current_tool = index
         self.signals.updateTool.emit(index)
-
-    def loadDefaults(self):
-        self.transparentSelection = True
-        self.pencilSize = 3
-        self.secondaryColorEraser = False
-        self.eraserSize = 1

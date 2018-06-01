@@ -51,7 +51,7 @@ class MainWindow(QtGui.QMainWindow):
             a.toggled.connect(partial(self.context.changeCurrentTool, index=value))
             tool_bar_actions.append(a)
 
-        tool_bar_actions[self.context.currentTool].setChecked(True)
+        tool_bar_actions[self.context.current_tool].setChecked(True)
 
         return tool_bar_actions
 

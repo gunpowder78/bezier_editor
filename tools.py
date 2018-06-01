@@ -106,7 +106,7 @@ class ToolProperties(QtGui.QDockWidget):
     def create_pencil_widget(self):
         return self.create_size_widget(self.context.setPencilSize,
                                        self.signals.updatePencilSize,
-                                       self.context.pencilSize)
+                                       self.context.pencil_size)
 
     def create_join_widget(self):
         widget = QtGui.QWidget()
@@ -126,7 +126,7 @@ class ToolProperties(QtGui.QDockWidget):
         return widget
 
     def update_widget(self):
-        self.setWidget(self.widgets[self.context.currentTool])
+        self.setWidget(self.widgets[self.context.current_tool])
 
 
 class CurveProperties(QtGui.QDockWidget):
