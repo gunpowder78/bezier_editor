@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial import ConvexHull
-from algorithms import casteljau, split_bezier, degree_elevation
+from algorithms import casteljau, split_bezier, degree_elevation, degree_reduction
 from PyQt4.QtGui import QColor
 from PyQt4.QtCore import Qt
 
@@ -79,9 +79,14 @@ class Curve(object):
             self.translate(dx, dy)
 
     def degree_elevation(self):
-        new_points = degree_elevation(self.control_points)
-        self.control_points = new_points.tolist()
-        self.compute()
+        if len(self.control_points) > 2:
+            self.control_points = degree_elevation(self.control_points).tolist()
+            self.compute()
+
+    def degree_reduction(self):
+        if len(self.control_points) > 3:
+            self.control_points = degree_reduction(self.control_points).tolist()
+            self.compute()
 
     def compute(self, n=1000):
         points = np.array(self.control_points)

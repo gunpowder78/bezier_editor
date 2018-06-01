@@ -160,6 +160,9 @@ class Canvas(QWidget):
         elif self.context.current_tool == Tools.Elevate:
             self.curve.degree_elevation()
             self.update()
+        elif self.context.current_tool == Tools.Reduce:
+            self.curve.degree_reduction()
+            self.update()
 
     def mouseMoveEvent(self, event):
         if self.tracking:
