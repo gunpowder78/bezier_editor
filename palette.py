@@ -14,7 +14,7 @@ class CurrentColor(QtGui.QLabel):
         self.parent = parent
         self.context = context
         self.signals = signals
-        self.signals.updateColor.connect(self.update)
+        self.signals.update_color.connect(self.update)
         self.kind = kind
 
         if kind == 'curve':
@@ -48,7 +48,7 @@ class CurrentColor(QtGui.QLabel):
         if e.button() == Qt.LeftButton:
             self.setLineWidth(3)
             self.context.selected_color = self.kind
-            self.signals.updateColor.emit()
+            self.signals.update_color.emit()
 
     def update(self):
         if self.kind == 'curve':

@@ -5,7 +5,7 @@ from PyQt4 import QtCore
 
 
 class Signals(QtCore.QObject):
-    updateColor = QtCore.pyqtSignal()
+    update_color = QtCore.pyqtSignal()
 
     update_tool = QtCore.pyqtSignal([int])
 

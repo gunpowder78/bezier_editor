@@ -27,7 +27,7 @@ class Canvas(QWidget):
         self.tracking = None
 
         self.signals.hull_selection.connect(self.update_curve)
-        self.signals.updateColor.connect(self.update_curve)
+        self.signals.update_color.connect(self.update_curve)
         self.signals.update_pencil_size.connect(self.update_curve)
         self.signals.update_tool.connect(self.update_cursor)
         self.signals.change_curve.connect(self.set_current_curve)

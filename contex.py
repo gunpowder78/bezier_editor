@@ -62,15 +62,15 @@ class Context:
 
     def change_curve_color(self, c):
         self.curve_color = c
-        self.signals.updateColor.emit()
+        self.signals.update_color.emit()
 
     def change_points_color(self, c):
         self.points_color = c
-        self.signals.updateColor.emit()
+        self.signals.update_color.emit()
 
     def change_hull_color(self, c):
         self.hull_color = c
-        self.signals.updateColor.emit()
+        self.signals.update_color.emit()
 
     def change_current_tool(self, index):
         self.current_tool = index
