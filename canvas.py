@@ -170,7 +170,7 @@ class Canvas(QWidget):
             self.high_light_points = []
             v1 = self.curves[curve_idx].control_points[curve_end]
             v2 = self.curves[curve_idx].control_points[curve_end + 1 if curve_end == 0 else curve_end - 1]
-            self.curve.join(head, v1, self.context.join_type, v2)
+            self.curve.join(head, v1, self.context.c1_join, v2)
             self.update()
         elif self.context.current_tool == Tools.Rotate:
             self.curve.update_tmp_points()

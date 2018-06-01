@@ -104,7 +104,7 @@ class ToolProperties(QtGui.QDockWidget):
         return widget
 
     def create_pencil_widget(self):
-        return self.create_size_widget(self.context.setPencilSize,
+        return self.create_size_widget(self.context.set_pencil_size,
                                        self.signals.updatePencilSize,
                                        self.context.pencil_size)
 
@@ -116,7 +116,7 @@ class ToolProperties(QtGui.QDockWidget):
         vbox = QtGui.QVBoxLayout()
 
         c1 = QtGui.QCheckBox("C1 continuity", self)
-        c1.setChecked(self.context.join_type)
+        c1.setChecked(self.context.c1_join)
         c1.toggled.connect(self.context.set_join_type)
 
         vbox.setAlignment(QtCore.Qt.AlignTop)

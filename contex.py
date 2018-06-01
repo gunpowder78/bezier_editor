@@ -22,16 +22,14 @@ class Context:
                         [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
         self.current_tool = 1
+        self.pencil_size = 3
+
         self.curves_to_remove = []
         self.current_curve = None
-
-        self.clipboard = QtGui.QApplication.clipboard()
 
         self.pencil_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/penicon.png"), 2, 17)
         self.eraser_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/erasericon.png"), 2, 17)
         self.grab_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/grab.png"), 2, 17)
-
-        self.pencil_size = 3
 
         self.hull_selection = True
 
@@ -41,7 +39,7 @@ class Context:
 
         self.selected_color = 'curve'  # curve, points, hull
 
-        self.join_type = False
+        self.c1_join = False
 
     def set_hull_selection(self, x):
         self.hull_selection = x
@@ -54,29 +52,26 @@ class Context:
             self.current_curve = None
         self.signals.change_curve.emit()
 
-    def setPencilSize(self, size):
-        if size < 10 and size > 0:
+    def set_pencil_size(self, size):
+        if 0 < size < 10:
             self.pencil_size = size
             self.signals.updatePencilSize.emit(self.pencil_size)
 
     def set_join_type(self, x):
-        self.join_type = x
+        self.c1_join = x
 
     def change_curve_color(self, c):
-
         self.curve_color = c
         self.signals.updateColor.emit()
 
     def change_points_color(self, c):
-
         self.points_color = c
         self.signals.updateColor.emit()
 
     def change_hull_color(self, c):
-
         self.hull_color = c
         self.signals.updateColor.emit()
 
-    def changeCurrentTool(self, index):
+    def change_current_tool(self, index):
         self.current_tool = index
         self.signals.updateTool.emit(index)

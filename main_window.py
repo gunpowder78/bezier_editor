@@ -48,7 +48,7 @@ class MainWindow(QtGui.QMainWindow):
                               tool + " (" + shortcut + ")", self.tools)
             a.setCheckable(True)
             a.setShortcut(shortcut)
-            a.toggled.connect(partial(self.context.changeCurrentTool, index=value))
+            a.toggled.connect(partial(self.context.change_current_tool, index=value))
             tool_bar_actions.append(a)
 
         tool_bar_actions[self.context.current_tool].setChecked(True)
