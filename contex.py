@@ -55,7 +55,7 @@ class Context:
     def set_pencil_size(self, size):
         if 0 < size < 10:
             self.pencil_size = size
-            self.signals.updatePencilSize.emit(self.pencil_size)
+            self.signals.update_pencil_size.emit(self.pencil_size)
 
     def set_join_type(self, x):
         self.c1_join = x
@@ -74,4 +74,4 @@ class Context:
 
     def change_current_tool(self, index):
         self.current_tool = index
-        self.signals.updateTool.emit(index)
+        self.signals.update_tool.emit(index)

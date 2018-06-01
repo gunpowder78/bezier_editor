@@ -6,18 +6,10 @@ from PyQt4 import QtCore
 
 class Signals(QtCore.QObject):
     updateColor = QtCore.pyqtSignal()
-    updateColorDeg = QtCore.pyqtSignal()
 
-    updateTool = QtCore.pyqtSignal([int])
-    autoUpdateTool = QtCore.pyqtSignal([int])
+    update_tool = QtCore.pyqtSignal([int])
 
-    transparentSelection = QtCore.pyqtSignal([bool])
-
-    enterCanvas = QtCore.pyqtSignal()
-    leaveCanvas = QtCore.pyqtSignal()
-    overCanvas = QtCore.pyqtSignal([int, int])
-
-    updatePencilSize = QtCore.pyqtSignal([int])
+    update_pencil_size = QtCore.pyqtSignal([int])
 
     hull_selection = QtCore.pyqtSignal([bool])
 

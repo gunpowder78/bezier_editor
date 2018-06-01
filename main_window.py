@@ -36,8 +36,6 @@ class MainWindow(QtGui.QMainWindow):
         self.imagePosLabel = QtGui.QLabel()
         self.imagePosLabel.setObjectName("ImagePosLabel")
 
-        self.signals.autoUpdateTool.connect(self.set_current_tool)
-
         self.show()
 
     def create_tool_bar_actions(self):
@@ -127,7 +125,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_current_tool(self, index):
         self.tools.actions()[index].setChecked(True)
-        self.signals.updateTool.emit(0)
+        self.signals.update_tool.emit(0)
 
     def new_file(self):
         pass

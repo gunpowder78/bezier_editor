@@ -28,8 +28,8 @@ class Canvas(QWidget):
 
         self.signals.hull_selection.connect(self.update_curve)
         self.signals.updateColor.connect(self.update_curve)
-        self.signals.updatePencilSize.connect(self.update_curve)
-        self.signals.updateTool.connect(self.update_cursor)
+        self.signals.update_pencil_size.connect(self.update_curve)
+        self.signals.update_tool.connect(self.update_cursor)
         self.signals.change_curve.connect(self.set_current_curve)
         self.signals.delete_curves.connect(self.delete_curves)
 

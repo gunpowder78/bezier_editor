@@ -58,7 +58,7 @@ class ToolProperties(QtGui.QDockWidget):
         self.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
         self.widgets = self.create_widgets()
-        self.signals.updateTool.connect(self.update_widget)
+        self.signals.update_tool.connect(self.update_widget)
 
         self.update_widget()
 
@@ -92,7 +92,7 @@ class ToolProperties(QtGui.QDockWidget):
         slider.valueChanged.connect(context)  # self.context.setPencilSize)
         slider.valueChanged.connect(size_widget.set_value)
 
-        signal.connect(slider.setValue)  # self.signals.updatePencilSize
+        signal.connect(slider.setValue)  # self.signals.update_pencil_size
 
         hbox.addWidget(size_label)
         hbox.addWidget(slider)
@@ -105,7 +105,7 @@ class ToolProperties(QtGui.QDockWidget):
 
     def create_pencil_widget(self):
         return self.create_size_widget(self.context.set_pencil_size,
-                                       self.signals.updatePencilSize,
+                                       self.signals.update_pencil_size,
                                        self.context.pencil_size)
 
     def create_join_widget(self):
