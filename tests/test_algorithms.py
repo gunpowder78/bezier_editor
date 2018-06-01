@@ -1,4 +1,4 @@
-from algorithms import prod, outer, casteljau, degree_elevation
+from algorithms import prod, outer, casteljau, degree_elevation, degree_reduction
 import numpy as np
 
 
@@ -29,4 +29,18 @@ def test_degree_elevation():
     expected_new_control_points = np.array([[0, 0], [.75, .75], [1.5, .5], [2, 0]])
 
     np.testing.assert_array_equal(expected_new_control_points, degree_elevation(control_points))
+
+
+def test_degree_reduction_matching():
+    control_points = [[0, 0], [.75, .75], [1.5, .5], [2, 0]]
+    expected_new_control_points = np.array([[0, 0], [1, 1], [2, 0]])
+
+    np.testing.assert_array_equal(expected_new_control_points, degree_reduction(control_points))
+
+
+def test_degree_reduction_non_matching():
+    control_points = [[0, 0], [1, 1], [1.5, .5], [2, 0]]
+    expected_new_control_points = np.array([[0, 0], [7./6, 7./6], [2, 0]])
+
+    np.testing.assert_array_almost_equal(expected_new_control_points, degree_reduction(control_points), decimal=6)
 

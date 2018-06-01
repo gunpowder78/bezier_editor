@@ -72,3 +72,26 @@ def degree_elevation(p):
     coefs = np.arange(1, n, dtype=float).reshape(n - 1, 1)
     new_points[1:-1, :] = (coefs * pp[:-1, :] + (n - coefs + 1) * pp[1:, :]) / (n + 1.)
     return new_points
+
+
+def degree_reduction(p):
+    n = len(p)
+    pp = np.array(p)
+
+    left_points = [0]*(n/2)
+    left_points[0] = pp[0, :]
+    for k in xrange(1, n/2):
+        coef = float(k)/(n-k)
+        left_points[k] = (1 + coef) * pp[k, :] - coef * left_points[k-1]
+
+    right_points = [0] * (n-n/2)
+    right_points[-1] = pp[-1, :]
+    for k in xrange(n-2, n/2-1, -1):
+        coef = n/float(k)
+        right_points[k-n/2] = coef * pp[k, :] + (1-coef) * right_points[k-n/2+1]
+
+    if (left_points[-1] != right_points[0]).all():
+        right_points[0] = (left_points[-1] + right_points[0]) / 2
+
+    return np.array(left_points[:-1] + right_points)
+
