@@ -80,10 +80,11 @@ class Curve(object):
 
     def compute(self, n=1000):
         points = np.array(self.control_points)
-        if len(points) < 3:
-            return points
-        self.curve_points = casteljau(np.linspace(0, 1, n), points.T)
-        self.calculate_center()
+        if len(points) < 2:
+            self.curve_points = np.array(points)
+        else:
+            self.curve_points = casteljau(np.linspace(0, 1, n), points.T)
+            self.calculate_center()
         self.update_tmp_points()
         return self.curve_points
 
