@@ -1,4 +1,4 @@
-from algorithms import prod, outer, casteljau
+from algorithms import prod, outer, casteljau, degree_elevation
 import numpy as np
 
 
@@ -24,8 +24,9 @@ def test_casteljau():
     assert (res == result).all()
 
 
-def test_casteljau2():
-    t = np.linspace(0, 1, 5)
-    p = np.array([(0, 0), (0, 1), (1, 1)])
-    _, coefs = casteljau(t, p.T, 2)
-    print 'dupa'
+def test_degree_elevation():
+    control_points = [[0, 0], [1, 1], [2, 0]]
+    expected_new_control_points = np.array([[0, 0], [.75, .75], [1.5, .5], [2, 0]])
+
+    np.testing.assert_array_equal(expected_new_control_points, degree_elevation(control_points))
+

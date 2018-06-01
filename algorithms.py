@@ -60,3 +60,15 @@ def split_bezier(t, p, by):
         right_curve.append(a[-1])
     right_curve = right_curve[::-1] + [p[-1, :]]
     return asarray(left_curve), asarray(right_curve)
+
+
+def degree_elevation(p):
+    n = len(p)
+    pp = np.array(p)
+    new_points = np.zeros((n+1, 2))
+    new_points[0, :] = pp[0, :]
+    new_points[-1, :] = pp[-1, :]
+
+    coefs = np.arange(1, n, dtype=float).reshape(n - 1, 1)
+    new_points[1:-1, :] = (coefs * pp[:-1, :] + (n - coefs + 1) * pp[1:, :]) / (n + 1.)
+    return new_points
