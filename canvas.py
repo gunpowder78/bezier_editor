@@ -157,6 +157,9 @@ class Canvas(QWidget):
             pos0_x, pos0_y = pos - self.curve.center[1]
             alpha0 = np.arctan2(pos0_y, pos0_x)
             self.tracking = rot
+        elif self.context.current_tool == Tools.Elevate:
+            self.curve.degree_elevation()
+            self.update()
 
     def mouseMoveEvent(self, event):
         if self.tracking:

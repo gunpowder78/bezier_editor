@@ -13,7 +13,9 @@ class _Tools(object):
               ('Slice', 4, 'k'),
               ('Join', 5, 'j'),
               ('Copy', 6, 'c'),
-              ('Rotate', 7, 'r')]
+              ('Rotate', 7, 'r'),
+              ('Elevate', 8, 'e'),
+              ('Reduce', 9, 'l')]
 
     def __init__(self):
         for name, val, _ in self.fields:
@@ -69,6 +71,8 @@ class ToolProperties(QtGui.QDockWidget):
                 QtGui.QWidget(),
                 QtGui.QWidget(),
                 self.create_join_widget(),
+                QtGui.QWidget(),
+                QtGui.QWidget(),
                 QtGui.QWidget(),
                 QtGui.QWidget()]
 
