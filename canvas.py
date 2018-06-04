@@ -74,8 +74,9 @@ class Canvas(QWidget):
             # draw points
             painter.setBrush(QBrush(curve.points_color))
             painter.setPen(QPen(QColor(Qt.lightGray), pen_size))
-            for x, y in curve.control_points:
+            for idx, (x, y) in enumerate(curve.control_points):
                 painter.drawEllipse(QRectF(x - 4, y - 4, 8, 8))
+                painter.drawText(QPointF(x-6, y-6), str(idx))
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
 
