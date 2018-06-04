@@ -27,10 +27,6 @@ class Context:
         self.curves_to_remove = []
         self.current_curve = None
 
-        self.pencil_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/penicon.png"), 2, 17)
-        self.eraser_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/erasericon.png"), 2, 17)
-        self.grab_cur = QtGui.QCursor(QtGui.QPixmap("images/cursors/grab.png"), 2, 17)
-
         self.hull_selection = True
 
         self.curve_color = QtGui.QColor(QtCore.Qt.red)

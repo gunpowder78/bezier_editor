@@ -1,5 +1,5 @@
 from PyQt4.QtGui import QWidget, QPolygonF, QPainter, QPen, QBrush, QColor, \
-    QVBoxLayout, QPalette
+    QVBoxLayout, QPalette, QPixmap, QCursor
 from PyQt4.QtCore import Qt, QRectF, QPointF
 import numpy as np
 from curve import Curve
@@ -32,6 +32,8 @@ class Canvas(QWidget):
         self.signals.update_tool.connect(self.update_cursor)
         self.signals.change_curve.connect(self.set_current_curve)
         self.signals.delete_curves.connect(self.delete_curves)
+
+        self.update_cursor()
 
     def set_current_curve(self):
         if self.context.current_curve is not None:
@@ -185,14 +187,11 @@ class Canvas(QWidget):
         super(Canvas, self).update()
 
     def update_cursor(self):
-        cursors = [self.context.grab_cur, self.context.pencil_cur, self.context.eraser_cur, 0]
-
-        for i in range(len(cursors)):
-            if self.context.current_tool == i:
-                if cursors[i] == 0:
-                    self.unsetCursor()
-                else:
-                    self.setCursor(cursors[i])
+        path = Tools.get_cursor_path(self.context.current_tool)
+        if path:
+            self.setCursor(QCursor(QPixmap(path), 2, 17))
+        else:
+            self.unsetCursor()
 
     def update_curve(self):
         if self.curve is not None:

@@ -41,11 +41,10 @@ class MainWindow(QtGui.QMainWindow):
     def create_tool_bar_actions(self):
         tool_bar_actions = []
 
-        for tool, value, shortcut in Tools.get_fields():
-            a = QtGui.QAction(QtGui.QIcon(os.path.join("images", "icons", tool + ".png")),
-                              tool + " (" + shortcut + ")", self.tools)
+        for tool, value, _ in Tools.get_fields():
+            a = QtGui.QAction(QtGui.QIcon(os.path.join("images", "icons", tool + ".png")), tool, self.tools)
             a.setCheckable(True)
-            a.setShortcut(shortcut)
+            # a.setShortcut(shortcut)
             a.toggled.connect(partial(self.context.change_current_tool, index=value))
             tool_bar_actions.append(a)
 

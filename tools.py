@@ -1,25 +1,34 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import os
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
 
 class _Tools(object):
-    fields = [('Grab', 0, 'g'),
-              ('Pencil', 1, 'p'),
-              ('Eraser', 2, 'e'),
-              ('Selection', 3, 's'),
-              ('Slice', 4, 'k'),
-              ('Join', 5, 'j'),
-              ('Copy', 6, 'c'),
-              ('Rotate', 7, 'r'),
-              ('Elevate', 8, 'e'),
-              ('Reduce', 9, 'l')]
+    # name, index, enable cursor
+    fields = [('Grab', 0, True),
+              ('Pencil', 1, True),
+              ('Eraser', 2, True),
+              ('Selection', 3, False),
+              ('Slice', 4, False),
+              ('Join', 5, False),
+              ('Copy', 6, False),
+              ('Rotate', 7, False),
+              ('Elevate', 8, False),
+              ('Reduce', 9, False)]
+    cursor_path = os.path.join(*['images', 'cursors'])
+    icon_path = os.path.join(*['images', 'icons'])
 
     def __init__(self):
         for name, val, _ in self.fields:
             setattr(self, name, val)
+        self.d = {v:(k, enable) for k, v, enable in self.fields}
+
+    def get_cursor_path(self, i):
+        if self.d[i][1]:
+            return os.path.join(self.cursor_path, self.d[i][0])
+        return False
 
     @classmethod
     def get_names(cls):
@@ -28,10 +37,6 @@ class _Tools(object):
     @classmethod
     def get_values(cls):
         return [val for _, val, _ in cls.fields]
-
-    @classmethod
-    def get_shortcuts(cls):
-        return [shortcut for _, _, shortcut in cls.fields]
 
     @classmethod
     def get_fields(cls):
