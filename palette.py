@@ -120,9 +120,9 @@ class Palette(QtGui.QWidget):
         self.setObjectName("Palette")
 
         palette = QtGui.QGridLayout()
-        for i in range(5):
-            for j in range(12):
-                palette.addWidget(Color(i * 12 + j, self.context.palette[i * 12 + j], self.context, self.signals), i, j)
+        for i in range(3):
+            for j in range(8):
+                palette.addWidget(Color(i * 8 + j, self.context.palette[i * 8 + j], self.context, self.signals), i, j)
 
         palette.setSpacing(1)
 

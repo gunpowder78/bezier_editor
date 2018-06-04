@@ -473,3 +473,13 @@ QFrame#Color {
  	border: none;
  	border-radius: 2px;
 }
+
+/* QHeaderView */
+
+QHeaderView::section {
+    background-color: rgb(61,69,72);
+	background-color: rgb(45,46,48);
+    color: white;
+    padding-left: 4px;
+    border: 1px solid #6c6c6c;
+}
