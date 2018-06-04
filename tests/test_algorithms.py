@@ -20,21 +20,19 @@ def test_casteljau():
                        [17.5, 12.5],
                        [19.375, 15.625],
                        [20., 20.]])
-    res = casteljau(t, p)
-    assert (res == result).all()
+    np.testing.assert_array_equal(result, casteljau(t, p))
 
 
 def test_casteljau_with_weights():
     t = np.linspace(0, 1, 5)
     p = np.array([[10, 10], [20, 10], [20, 20]]).T
     w = [.5, 1, 1]
-    result = np.array([[5., 5.],
-                       [11.5625, 7.8125],
-                       [16.25, 11.25],
-                       [19.0625, 15.3125],
+    result = np.array([[10., 10.],
+                       [16.08695652, 10.86956522],
+                       [18.57142857, 12.85714286],
+                       [19.67741935, 15.80645161],
                        [20., 20.]])
-    res = casteljau(t, p, weights=w)
-    assert (res == result).all()
+    np.testing.assert_array_almost_equal(result, casteljau(t, p, weights=w))
 
 
 def test_degree_elevation():

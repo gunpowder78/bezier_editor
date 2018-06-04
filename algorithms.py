@@ -34,12 +34,14 @@ def casteljau(t, p, by=None, weights=None):
 
     n = shape(p)[-1] - 1  # number of parameters
     if weights is None:
-        weights = 1.
+        w = outer(ones(shape(t)), ones(shape(p)))
     else:
         assert len(weights) == shape(p)[-1]
-        weights = np.array(weights).reshape((-1, n + 1))
+        w = asarray(weights).reshape((1, len(weights)))
+        w = outer(ones(shape(t)), np.vstack((w, w)))
 
-    b = outer(ones(shape(t)), weights * p)
+
+    b = outer(ones(shape(t)), p)
     if by is not None:
         _coefs = []
     x = outer(1. - t, ones(shape(p[..., 0])))
@@ -47,7 +49,9 @@ def casteljau(t, p, by=None, weights=None):
 
     for j in xrange(n):
         for i in xrange(n - j):
-            b[..., i] = x * b[..., i] + y * b[..., i+1]
+            w_i = x * w[..., i] + y * w[..., i+1]
+            b[..., i] = x * w[..., i] / w_i * b[..., i] + y * w[..., i+1] / w_i * b[..., i+1]
+            w[..., i] = w_i
             if by:
                 _coefs.append(tuple(b[by, :, i]))
     if by:
