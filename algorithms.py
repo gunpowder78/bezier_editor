@@ -28,13 +28,18 @@ def outer(A, B):
     return C.reshape(shape(A) + shape(B))
 
 
-def casteljau(t, p, by=None):
+def casteljau(t, p, by=None, weights=None):
     t = asarray(t)
     p = asarray(p)
 
     n = shape(p)[-1] - 1  # number of parameters
+    if weights is None:
+        weights = 1.
+    else:
+        assert len(weights) == shape(p)[-1]
+        weights = np.array(weights).reshape((-1, n + 1))
 
-    b = outer(ones(shape(t)), p)
+    b = outer(ones(shape(t)), weights * p)
     if by is not None:
         _coefs = []
     x = outer(1. - t, ones(shape(p[..., 0])))

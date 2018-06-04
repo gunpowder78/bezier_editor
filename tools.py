@@ -23,7 +23,7 @@ class _Tools(object):
     def __init__(self):
         for name, val, _ in self.fields:
             setattr(self, name, val)
-        self.d = {v:(k, enable) for k, v, enable in self.fields}
+        self.d = {v: (k, enable) for k, v, enable in self.fields}
 
     def get_cursor_path(self, i):
         if self.d[i][1]:

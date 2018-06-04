@@ -24,6 +24,19 @@ def test_casteljau():
     assert (res == result).all()
 
 
+def test_casteljau_with_weights():
+    t = np.linspace(0, 1, 5)
+    p = np.array([[10, 10], [20, 10], [20, 20]]).T
+    w = [.5, 1, 1]
+    result = np.array([[5., 5.],
+                       [11.5625, 7.8125],
+                       [16.25, 11.25],
+                       [19.0625, 15.3125],
+                       [20., 20.]])
+    res = casteljau(t, p, weights=w)
+    assert (res == result).all()
+
+
 def test_degree_elevation():
     control_points = [[0, 0], [1, 1], [2, 0]]
     expected_new_control_points = np.array([[0, 0], [.75, .75], [1.5, .5], [2, 0]])
