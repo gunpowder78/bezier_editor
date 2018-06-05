@@ -2,7 +2,8 @@
 # coding: utf-8
 import os
 from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QString
+from PyQt4.QtGui import QTableWidget, QTableWidgetItem
 
 
 class _Tools(object):
@@ -164,10 +165,44 @@ class CurveProperties(QtGui.QDockWidget):
         hull.toggled.connect(self.context.set_hull_selection)
         self.signals.hull_selection.connect(hull.setChecked)
 
+        weights = self.create_weights_widget()
+
         vbox.setAlignment(QtCore.Qt.AlignTop)
         vbox.addWidget(hull)
+        vbox.addWidget(weights)
+
         widget.setLayout(vbox)
         return widget
+
+    def create_weights_widget(self):
+        def add_item():
+            row = table_widget.rowCount()
+            item = QTableWidgetItem()
+            item.setData(Qt.EditRole, 1.)
+            table_widget.insertRow(row)
+            table_widget.setItem(row, 0, item)
+
+        def change_all_rows(new_rows):
+            for i in xrange(table_widget.rowCount(), -1, -1):
+                table_widget.removeRow(i)
+            for i, value in enumerate(new_rows):
+                item = QTableWidgetItem()
+                item.setData(Qt.EditRole, value)
+                table_widget.insertRow(i)
+                table_widget.setItem(i, 0, item)
+
+        def change_item(x, y):
+            val = float(table_widget.item(x, y).text())
+            self.signals.change_weight.emit(x, val)
+
+        table_widget = QTableWidget(0, 1)
+        table_widget.verticalHeader().setDefaultSectionSize(20)
+        table_widget.setHorizontalHeaderLabels([QString("weights")])
+        self.signals.new_point.connect(add_item)
+        self.signals.delete_point.connect(table_widget.removeRow)
+        self.signals.change_weights.connect(change_all_rows)
+        table_widget.cellChanged.connect(change_item)
+        return table_widget
 
 
 class CurveSelector(QtGui.QDockWidget):

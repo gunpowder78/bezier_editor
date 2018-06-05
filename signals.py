@@ -16,3 +16,8 @@ class Signals(QtCore.QObject):
     change_curve = QtCore.pyqtSignal()
     delete_curves = QtCore.pyqtSignal()
     add_curves = QtCore.pyqtSignal()
+
+    new_point = QtCore.pyqtSignal()
+    delete_point = QtCore.pyqtSignal([int])
+    change_weight = QtCore.pyqtSignal([int, float])
+    change_weights = QtCore.pyqtSignal([list])
