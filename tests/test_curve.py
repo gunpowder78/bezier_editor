@@ -16,8 +16,8 @@ def basic_curve_parameters():
 
 @pytest.fixture
 def basic_curve(basic_curve_parameters):
+    Curve.compute = mock.Mock()
     curve = Curve(**basic_curve_parameters)
-    curve.compute = mock.Mock()
     return curve
 
 
@@ -52,11 +52,14 @@ class TestCurveInsert:
 class TestCurvePop:
     def test_basic_pop(self, basic_curve):
         point = (sentinel.xb, sentinel.yb)
+        weight = sentinel.b
         basic_curve.control_points = [(sentinel.xa, sentinel.ya), point, (sentinel.xc, sentinel.yc)]
+        basic_curve.weights = [sentinel.a, weight, sentinel.c]
         index = 1
 
         result = basic_curve.pop(index)
         assert point not in basic_curve.control_points
+        assert weight not in basic_curve.weights
         assert point == result
 
 
@@ -85,9 +88,9 @@ class TestCurveCopy:
 
 class TestCurveSplit:
     def test_basic_split(self, basic_curve):
-        points = [[sentinel.xa, sentinel.ya], [sentinel.xb, sentinel.yb]]
+        points = [[sentinel.xa, sentinel.ya], [sentinel.xb, sentinel.yb]] * 2
         basic_curve.control_points = points
-        curve.split_bezier = lambda a, x, b: x
+        curve.split_bezier = lambda a, x, by, w: x
 
         new_curve = basic_curve.split(sentinel.index)
 

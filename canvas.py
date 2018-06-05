@@ -32,6 +32,7 @@ class Canvas(QWidget):
         self.signals.update_tool.connect(self.update_cursor)
         self.signals.change_curve.connect(self.set_current_curve)
         self.signals.delete_curves.connect(self.delete_curves)
+        self.signals.change_weight.connect(self.change_weight)
 
         self.update_cursor()
 
@@ -42,6 +43,7 @@ class Canvas(QWidget):
             self.curve = self.curves[self.context.current_curve]
             self.context.hull_selection = self.curve.hull_selection
             self.signals.hull_selection.emit(self.context.hull_selection)
+            self.signals.change_weights.emit(self.curve.weights)
             self.update()
 
     def add_curve(self):
@@ -55,6 +57,10 @@ class Canvas(QWidget):
             self.curves.pop(idx)
         self.context.curves_to_remove = []
         self.set_current_curve()
+
+    def change_weight(self, row, val):
+        self.curve.change(row, w=val)
+        self.update()
 
     @staticmethod
     def poly(pts):
@@ -106,6 +112,7 @@ class Canvas(QWidget):
             self.tracking = move
         elif self.context.current_tool == Tools.Pencil:
             self.curve.append((event.x(), event.y()))
+            self.signals.new_point.emit()
             self.update()
         elif self.context.current_tool == Tools.Selection:
             if not self.curve.control_points:
@@ -113,12 +120,13 @@ class Canvas(QWidget):
             pp = np.array(self.curve.control_points)
             pp = ((pp[:, 0] - event.x())**2 + (pp[:, 1] - event.y())**2)
             if pp.min() < 200:
-                self.tracking = lambda p: self.curve.change(pp.argmin(), p)
+                self.tracking = lambda p: self.curve.change(pp.argmin(), p=p)
         elif self.context.current_tool == Tools.Eraser:
             pp = np.array(self.curve.control_points)
             pp = ((pp[:, 0] - event.x()) ** 2 + (pp[:, 1] - event.y()) ** 2)
             if pp.min() < 200:
                 self.curve.pop(pp.argmin())
+                self.signals.delete_point.emit(pp.argmin())
                 self.update()
         elif self.context.current_tool == Tools.Slice:
             pp = self.curve.curve_points
@@ -127,6 +135,7 @@ class Canvas(QWidget):
                 new_curve = self.curve.split(pp.argmin())
                 self.curves.append(new_curve)
                 self.signals.add_curves.emit()
+                self.signals.change_weights.emit(self.curve.weights)
                 self.update()
         elif self.context.current_tool == Tools.Copy:
             new_curve = self.curve.copy()
@@ -162,9 +171,11 @@ class Canvas(QWidget):
             self.tracking = rot
         elif self.context.current_tool == Tools.Elevate:
             self.curve.degree_elevation()
+            self.signals.change_weights.emit(self.curve.weights)
             self.update()
         elif self.context.current_tool == Tools.Reduce:
             self.curve.degree_reduction()
+            self.signals.change_weights.emit(self.curve.weights)
             self.update()
 
     def mouseMoveEvent(self, event):

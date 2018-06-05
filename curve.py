@@ -6,9 +6,10 @@ from PyQt4.QtCore import Qt
 
 
 class Curve(object):
-    def __init__(self, control_points=None, curve_color=QColor(Qt.red), points_color=QColor(Qt.red),
+    def __init__(self, control_points=None, weights=None, curve_color=QColor(Qt.red), points_color=QColor(Qt.red),
                  hull_color=QColor(Qt.red), size=3, hull_selection=True):
         self.control_points = control_points or []
+        self.weights = (weights or [1.] * len(control_points)) if control_points else []
         self.curve_points = self.compute() if control_points else []
         self.curve_color = curve_color
         self.points_color = points_color
@@ -21,31 +22,38 @@ class Curve(object):
 
     def append(self, p):
         self.control_points.append(p)
+        self.weights.append(1.)
         self.compute()
 
     def insert(self, i, p):
         self.control_points.insert(i, p)
+        self.weights.insert(i, 1.)
         self.compute()
 
     def pop(self, i):
         point = self.control_points.pop(i)
+        self.weights.pop(i)
         self.compute()
         return point
 
-    def change(self, i, p):
-        self.control_points[i] = p
+    def change(self, i, p=None, w=None):
+        if p:
+            self.control_points[i] = p
+        if w:
+            self.weights[i] = w
         self.compute()
 
     def copy(self):
-        return Curve(control_points=self.control_points[:], curve_color=self.curve_color,
+        return Curve(control_points=self.control_points[:], weights=self.weights, curve_color=self.curve_color,
                      points_color=self.points_color, hull_color=self.hull_color, size=self.size,
                      hull_selection=self.hull_selection)
 
     def split(self, i, n=1000):
-        left, right = split_bezier(np.linspace(0, 1, n), np.asarray(self.control_points), i)
+        left, right, l_w, r_w = split_bezier(np.linspace(0, 1, n), np.asarray(self.control_points), by=i, w=self.weights)
         self.control_points = left.tolist()
+        self.weights = l_w.tolist()
         self.compute()
-        return Curve(control_points=right.tolist(), curve_color=self.curve_color,
+        return Curve(control_points=right.tolist(), weights=r_w.tolist(), curve_color=self.curve_color,
                      points_color=self.points_color, hull_color=self.hull_color, size=self.size,
                      hull_selection=self.hull_selection)
 
@@ -80,12 +88,14 @@ class Curve(object):
 
     def degree_elevation(self):
         if len(self.control_points) > 2:
-            self.control_points = degree_elevation(self.control_points).tolist()
+            new_points, new_weights = degree_elevation(self.control_points, w=self.weights)
+            self.control_points, self.weights = new_points.tolist(), new_weights.tolist()
             self.compute()
 
     def degree_reduction(self):
         if len(self.control_points) > 3:
-            self.control_points = degree_reduction(self.control_points).tolist()
+            new_points, new_weights = degree_reduction(self.control_points, w=self.weights)
+            self.control_points, self.weights = new_points.tolist(), new_weights.tolist()
             self.compute()
 
     def compute(self, n=1000):
@@ -93,7 +103,7 @@ class Curve(object):
         if len(points) < 2:
             self.curve_points = np.array(points)
         else:
-            self.curve_points = casteljau(np.linspace(0, 1, n), points.T)
+            self.curve_points = casteljau(np.linspace(0, 1, n), points.T, weights=self.weights)
             self.calculate_center()
         self.update_tmp_points()
         return self.curve_points
