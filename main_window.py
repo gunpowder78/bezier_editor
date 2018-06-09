@@ -30,11 +30,8 @@ class MainWindow(QtGui.QMainWindow):
         self.toolBar = self.create_tool_bar()
         self.create_dock_widgets()
 
-        self.mainWidget = Canvas(context, signals, self)
-        self.setCentralWidget(self.mainWidget)
-
-        self.imagePosLabel = QtGui.QLabel()
-        self.imagePosLabel.setObjectName('ImagePosLabel')
+        self.main_widget = Canvas(context, signals, self)
+        self.setCentralWidget(self.main_widget)
 
         self.show()
 
@@ -44,7 +41,6 @@ class MainWindow(QtGui.QMainWindow):
         for tool, value, _ in Tools.get_fields():
             a = QtGui.QAction(QtGui.QIcon(os.path.join('images', 'icons', tool + '.png')), tool, self.tools)
             a.setCheckable(True)
-            # a.setShortcut(shortcut)
             a.toggled.connect(partial(self.context.change_current_tool, index=value))
             tool_bar_actions.append(a)
 
@@ -85,8 +81,8 @@ class MainWindow(QtGui.QMainWindow):
         return file_actions
 
     def create_menu_bar(self):
-        menubar = self.menuBar()
-        file_menu = menubar.addMenu('file')
+        menu_bar = self.menuBar()
+        file_menu = menu_bar.addMenu('file')
         file_actions = self.create_file_actions()
 
         for i in file_actions:
@@ -95,7 +91,7 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 file_menu.addAction(i)
 
-        return menubar
+        return menu_bar
 
     def create_dock_widgets(self):
         # Palette widget
@@ -136,8 +132,8 @@ class MainWindow(QtGui.QMainWindow):
         try:
             result = np.loadtxt(file_name, delimiter=',')
             assert result.shape[-1] in [3, 4]
-            self.mainWidget.from_csv(result)
-            text  = 'Curves have been successfully loaded from\n{}'.format(file_name)
+            self.main_widget.from_csv(result)
+            text = 'Curves have been successfully loaded from\n{}'.format(file_name)
             QtGui.QMessageBox.information(self, 'Successful !', text)
         except Exception as ex:
             QtGui.QMessageBox.information(self, 'Error !', ex.message)
@@ -162,14 +158,14 @@ class MainWindow(QtGui.QMainWindow):
         _filter = '*.csv;;'
         ext = ['.csv']
         saver = lambda arr, file_name: np.savetxt(file_name, arr, delimiter=',')
-        self.save(title=title, _filter=_filter, getter=self.mainWidget.get_csv, exts=ext, saver=saver)
+        self.save(title=title, _filter=_filter, getter=self.main_widget.get_csv, exts=ext, saver=saver)
 
     def save_file_as(self):
         title = 'Save as image'
         _filter = '*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg'
         ext = ['.bmp', '.gif', '.png', '.xpm', '.jpg']
         saver = lambda img, file_name: img.save(file_name)
-        self.save(title=title, _filter=_filter, getter=self.mainWidget.get_image, exts=ext, saver=saver)
+        self.save(title=title, _filter=_filter, getter=self.main_widget.get_image, exts=ext, saver=saver)
 
     def restore_focus(self):
         self.releaseMouse()

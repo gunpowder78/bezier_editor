@@ -1,4 +1,3 @@
-from numpy import asarray, shape, dot, ones, cumsum
 import numpy as np
 
 
@@ -17,35 +16,35 @@ def outer(A, B):
         >>> outer(10, [2, 3])
         array([20, 30])
     """
-    M = prod(shape(A))
-    N = prod(shape(B))
+    M = prod(np.shape(A))
+    N = prod(np.shape(B))
     K = 1
 
-    A = asarray(A)
-    B = asarray(B)
+    A = np.asarray(A)
+    B = np.asarray(B)
 
-    C = dot(A.reshape(M, K), B.reshape(K, N))
-    return C.reshape(shape(A) + shape(B))
+    C = np.dot(A.reshape(M, K), B.reshape(K, N))
+    return C.reshape(np.shape(A) + np.shape(B))
 
 
 def casteljau(t, p, by=None, weights=None):
-    t = asarray(t)
-    p = asarray(p)
+    t = np.asarray(t)
+    p = np.asarray(p)
 
-    n = shape(p)[-1] - 1  # number of parameters
+    n = np.shape(p)[-1] - 1  # number of parameters
     if weights is None:
-        w = outer(ones(shape(t)), ones(shape(p)))
+        w = outer(np.ones(np.shape(t)), np.ones(np.shape(p)))
     else:
-        assert len(weights) == shape(p)[-1]
-        w = asarray(weights).reshape((1, len(weights)))
-        w = outer(ones(shape(t)), np.vstack((w, w)))
+        assert len(weights) == np.shape(p)[-1]
+        w = np.asarray(weights).reshape((1, len(weights)))
+        w = outer(np.ones(np.shape(t)), np.vstack((w, w)))
 
-    b = outer(ones(shape(t)), p)
+    b = outer(np.ones(np.shape(t)), p)
     if by is not None:
         _coefs = []
         _coefs_w = []
-    x = outer(1. - t, ones(shape(p[..., 0])))
-    y = outer(t, ones(shape(p[..., 0])))
+    x = outer(1. - t, np.ones(np.shape(p[..., 0])))
+    y = outer(t, np.ones(np.shape(p[..., 0])))
 
     for j in xrange(n):
         for i in xrange(n - j):
@@ -65,7 +64,7 @@ def split_bezier(t, p, by, w=None):
     left_curve = [p[0, :]]
     right_curve = []
     n = len(p) - 1
-    for a in np.split(coefs, cumsum(range(n, 0, -1)))[:-1]:
+    for a in np.split(coefs, np.cumsum(range(n, 0, -1)))[:-1]:
         left_curve.append(a[0])
         right_curve.append(a[-1])
     right_curve = right_curve[::-1] + [p[-1, :]]
@@ -74,16 +73,16 @@ def split_bezier(t, p, by, w=None):
     right_w = []
     if w is not None:
         left_w.append(w[0])
-        for a in np.split(coefs_w, cumsum(range(n, 0, -1)))[:-1]:
+        for a in np.split(coefs_w, np.cumsum(range(n, 0, -1)))[:-1]:
             left_w.append(a[0])
             right_w.append(a[-1])
         right_w = right_w[::-1] + [w[-1]]
-    return asarray(left_curve), asarray(right_curve), asarray(left_w), asarray(right_w)
+    return np.asarray(left_curve), np.asarray(right_curve), np.asarray(left_w), np.asarray(right_w)
 
 
 def degree_elevation(p, w=None):
     n = len(p)
-    w = asarray(w).reshape((n, 1)) if w is not None else np.ones((n, 1))
+    w = np.asarray(w).reshape((n, 1)) if w is not None else np.ones((n, 1))
     pp = np.hstack((np.array(p) * w, w))
 
     new_points = np.zeros((n+1, 3))
@@ -97,7 +96,7 @@ def degree_elevation(p, w=None):
 
 def degree_reduction(p, w=None):
     n = len(p)
-    w = asarray(w).reshape((n, 1)) if w is not None else np.ones((n, 1))
+    w = np.asarray(w).reshape((n, 1)) if w is not None else np.ones((n, 1))
     pp = np.hstack((np.array(p) * w, w))
 
     left_points = [0]*(n/2)
