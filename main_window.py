@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import numpy as np
 import os
 from functools import partial
 from PyQt4 import QtGui, QtCore
@@ -22,7 +22,7 @@ class MainWindow(QtGui.QMainWindow):
         self.context = context
 
         self.resize(800, 480)
-        self.setWindowTitle("Bezier Editor")
+        self.setWindowTitle('Bezier Editor')
 
         self.tools = QtGui.QActionGroup(self)
 
@@ -34,7 +34,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.mainWidget)
 
         self.imagePosLabel = QtGui.QLabel()
-        self.imagePosLabel.setObjectName("ImagePosLabel")
+        self.imagePosLabel.setObjectName('ImagePosLabel')
 
         self.show()
 
@@ -42,7 +42,7 @@ class MainWindow(QtGui.QMainWindow):
         tool_bar_actions = []
 
         for tool, value, _ in Tools.get_fields():
-            a = QtGui.QAction(QtGui.QIcon(os.path.join("images", "icons", tool + ".png")), tool, self.tools)
+            a = QtGui.QAction(QtGui.QIcon(os.path.join('images', 'icons', tool + '.png')), tool, self.tools)
             a.setCheckable(True)
             # a.setShortcut(shortcut)
             a.toggled.connect(partial(self.context.change_current_tool, index=value))
@@ -65,16 +65,15 @@ class MainWindow(QtGui.QMainWindow):
 
     def create_file_actions(self):
 
-        names = ["new", "open", "save", "saveas", "exit"]
-        icons = ["document-new.png", "document-open.png", "document-save.png", "document-save-as.png",
-                 "application-exit.png"]
-        shortcuts = ['Ctrl+N', 'Ctrl+O', 'Ctrl+S', 'Ctrl+Shift+S', 'Ctrl+Q']
-        connects = [self.new_file, self.open_file, self.save_file, self.save_file_as, self.close]
+        names = ['open', 'save', 'save as', 'exit']
+        icons = ['document-open.png', 'document-save.png', 'document-save-as.png', 'application-exit.png']
+        shortcuts = ['Ctrl+O', 'Ctrl+S', 'Ctrl+Shift+S', 'Ctrl+Q']
+        connects = [self.open_file, self.save_file, self.save_file_as, self.close]
 
         file_actions = []
 
         for name, icon, shortcut, conn in zip(names, icons, shortcuts, connects):
-            a = QtGui.QAction(QtGui.QIcon("images/" + icon), name, self)
+            a = QtGui.QAction(QtGui.QIcon('images/' + icon), name, self)
             a.setShortcut(shortcut)
             a.triggered.connect(self.restore_focus)
             if conn != 0:
@@ -87,7 +86,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def create_menu_bar(self):
         menubar = self.menuBar()
-        file_menu = menubar.addMenu("file")
+        file_menu = menubar.addMenu('file')
         file_actions = self.create_file_actions()
 
         for i in file_actions:
@@ -100,7 +99,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def create_dock_widgets(self):
         # Palette widget
-        palette = QtGui.QDockWidget("palette", self)
+        palette = QtGui.QDockWidget('palette', self)
         palette.setAllowedAreas(Qt.RightDockWidgetArea)
         palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
         palette.setWidget(Palette(self.context, self.signals))
@@ -108,17 +107,17 @@ class MainWindow(QtGui.QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, palette)
 
         # Global properties
-        curve_properties = CurveProperties("curve properties", self.context, self.signals)
+        curve_properties = CurveProperties('curve properties', self.context, self.signals)
         curve_properties.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.addDockWidget(Qt.RightDockWidgetArea, curve_properties)
 
         # Tool Properties widget
-        tool_properties = ToolProperties("tool properties", self.context, self.signals)
+        tool_properties = ToolProperties('tool properties', self.context, self.signals)
         tool_properties.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         self.addDockWidget(Qt.RightDockWidgetArea, tool_properties)
 
         # Curves
-        curve_selector = CurveSelector("curve selector", self.context, self.signals, self)
+        curve_selector = CurveSelector('curve selector', self.context, self.signals, self)
         curve_selector.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         self.addDockWidget(Qt.RightDockWidgetArea, curve_selector)
 
@@ -130,13 +129,47 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     def open_file(self):
-        pass
+        title = 'Open from file'
+        directory = '/home'
+        _filter = 'CSV (*.csv);;All files (*)'
+        file_name = str(QtGui.QFileDialog.getOpenFileName(self, title, directory, _filter))
+        try:
+            result = np.loadtxt(file_name, delimiter=',')
+            assert result.shape[-1] in [3, 4]
+            self.mainWidget.from_csv(result)
+            text  = 'Curves have been successfully loaded from\n{}'.format(file_name)
+            QtGui.QMessageBox.information(self, 'Successful !', text)
+        except Exception as ex:
+            QtGui.QMessageBox.information(self, 'Error !', ex.message)
+
+    def save(self, title, _filter, getter, exts, saver):
+        directory = os.getcwd()
+        file_name, _ = map(str, QtGui.QFileDialog().getSaveFileNameAndFilter(self, title, directory, _filter))
+        ext = os.path.splitext(file_name)[1]
+        if ext in exts:
+            result = getter()
+            try:
+                saver(result, file_name)
+                text = 'Object has been successfully saved as\n{}'.format(file_name)
+                QtGui.QMessageBox.information(self, 'Successful !', text)
+            except Exception as ex:
+                QtGui.QMessageBox.information(self, 'Error !', ex.message)
+        else:
+            QtGui.QMessageBox.information(self, 'Error !', 'wrong extension: {}'.format(ext))
 
     def save_file(self):
-        pass
+        title = 'Save to csv'
+        _filter = '*.csv;;'
+        ext = ['.csv']
+        saver = lambda arr, file_name: np.savetxt(file_name, arr, delimiter=',')
+        self.save(title=title, _filter=_filter, getter=self.mainWidget.get_csv, exts=ext, saver=saver)
 
     def save_file_as(self):
-        pass
+        title = 'Save as image'
+        _filter = '*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg'
+        ext = ['.bmp', '.gif', '.png', '.xpm', '.jpg']
+        saver = lambda img, file_name: img.save(file_name)
+        self.save(title=title, _filter=_filter, getter=self.mainWidget.get_image, exts=ext, saver=saver)
 
     def restore_focus(self):
         self.releaseMouse()

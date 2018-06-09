@@ -229,7 +229,7 @@ class CurveSelector(QtGui.QDockWidget):
 
         curve_list = CurveList(self.context, self.signals)
         curve_list.itemClicked.connect(self.context.set_current_curve)
-        self.signals.add_curve_to_widget.connect(curve_list.add_item)
+        self.signals.add_curve_to_widget.connect(curve_list.add_to_widget)
 
         button_add = QtGui.QPushButton('Add', self)
         button_add.clicked.connect(curve_list.add_item)
@@ -256,6 +256,9 @@ class CurveList(QtGui.QListWidget):
     def add_item(self):
         self.addItem(ListItem('curve {}'.format(len(self)), len(self)))
         self.signals.add_curve_to_backend.emit()
+
+    def add_to_widget(self):
+        self.addItem(ListItem('curve {}'.format(len(self)), len(self)))
 
     def remove_item(self):
         curves_to_remove = []

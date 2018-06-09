@@ -215,3 +215,34 @@ class Canvas(QWidget):
                 self.curve.update_color(self.context.selected_color, self.context.hull_color)
             self.curve.hull_selection = self.context.hull_selection
             self.update()
+
+    def get_image(self):
+        img = QPixmap(self.size())
+        painter = QPainter(img)
+        self.render(painter)
+        painter.end()
+        return img
+
+    def get_csv(self):
+        list_of_curves = []
+        for i, curve in enumerate(self.curves):
+            n = len(curve.control_points)
+            idx = np.ones((n, 1)) * i
+            points = np.asarray(curve.control_points)
+            weights = np.asarray(curve.weights).reshape((n, 1))
+            list_of_curves.append(np.hstack([idx, points, weights]))
+        return np.vstack(list_of_curves)
+
+    def from_csv(self, arr):
+        if arr.shape[-1] == 3:
+            arr = np.hstack([arr, np.ones((arr.shape[0], 1))])
+        idxes = np.unique(arr[:, 0])
+        result = [arr[arr[:, 0] == i, 1:] for i in idxes]
+        for points in result:
+            new_curve = Curve(control_points=points[:, :2].tolist(), weights=points[:, 2].tolist(),
+                              curve_color=self.context.curve_color, points_color=self.context.points_color,
+                              hull_color=self.context.hull_color, size=self.context.pencil_size,
+                              hull_selection=self.context.hull_selection)
+            self.curves.append(new_curve)
+            self.signals.add_curve_to_widget.emit()
+        self.update()
