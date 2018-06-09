@@ -6,6 +6,9 @@ from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import QTableWidget, QTableWidgetItem
 
 
+THEME = "algae"
+
+
 class _Tools(object):
     # name, index, enable cursor
     fields = [('Grab', 0, True),
@@ -18,8 +21,8 @@ class _Tools(object):
               ('Rotate', 7, False),
               ('Elevate', 8, False),
               ('Reduce', 9, False)]
-    cursor_path = os.path.join(*['images', 'cursors'])
-    icon_path = os.path.join(*['images', 'icons'])
+    cursor_path = os.path.join(*['themes', THEME, 'cursors'])
+    icon_path = os.path.join(*['themes', THEME, 'icons'])
 
     def __init__(self):
         for name, val, _ in self.fields:

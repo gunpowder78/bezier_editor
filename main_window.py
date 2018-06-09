@@ -9,7 +9,7 @@ from PyQt4.QtCore import Qt
 from canvas import Canvas
 from palette import Palette
 
-from tools import Tools, ToolProperties, CurveProperties, CurveSelector
+from tools import Tools, THEME, ToolProperties, CurveProperties, CurveSelector
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -39,7 +39,7 @@ class MainWindow(QtGui.QMainWindow):
         tool_bar_actions = []
 
         for tool, value, _ in Tools.get_fields():
-            a = QtGui.QAction(QtGui.QIcon(os.path.join('images', 'icons', tool + '.png')), tool, self.tools)
+            a = QtGui.QAction(QtGui.QIcon(os.path.join('themes', THEME, 'icons', tool + '.png')), tool, self.tools)
             a.setCheckable(True)
             a.toggled.connect(partial(self.context.change_current_tool, index=value))
             tool_bar_actions.append(a)
@@ -69,7 +69,7 @@ class MainWindow(QtGui.QMainWindow):
         file_actions = []
 
         for name, icon, shortcut, conn in zip(names, icons, shortcuts, connects):
-            a = QtGui.QAction(QtGui.QIcon('images/' + icon), name, self)
+            a = QtGui.QAction(QtGui.QIcon(os.path.join('themes', THEME, icon)), name, self)
             a.setShortcut(shortcut)
             a.triggered.connect(self.restore_focus)
             if conn != 0:
@@ -126,7 +126,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_file(self):
         title = 'Open from file'
-        directory = '/home'
+        directory = os.getcwd()
         _filter = 'CSV (*.csv);;All files (*)'
         file_name = str(QtGui.QFileDialog.getOpenFileName(self, title, directory, _filter))
         try:
