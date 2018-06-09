@@ -24,7 +24,6 @@ class Context:
         self.current_tool = 1
         self.pencil_size = 3
 
-        self.curves_to_remove = []
         self.current_curve = None
 
         self.hull_selection = True

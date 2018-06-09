@@ -33,18 +33,19 @@ class Canvas(QWidget):
         self.signals.change_curve.connect(self.set_current_curve)
         self.signals.delete_curves.connect(self.delete_curves)
         self.signals.change_weight.connect(self.change_weight)
+        self.signals.add_curve_to_backend.connect(self.add_curve)
 
         self.update_cursor()
 
     def set_current_curve(self):
         if self.context.current_curve is not None:
-            if len(self.curves) - 1 < self.context.current_curve:
-                self.add_curve()
             self.curve = self.curves[self.context.current_curve]
             self.context.hull_selection = self.curve.hull_selection
             self.signals.hull_selection.emit(self.context.hull_selection)
             self.signals.change_weights.emit(self.curve.weights)
-            self.update()
+        else:
+            self.curve = None
+        self.update()
 
     def add_curve(self):
         c = Curve(curve_color=self.context.curve_color, points_color=self.context.points_color,
@@ -52,11 +53,9 @@ class Canvas(QWidget):
                   hull_selection=self.context.hull_selection)
         self.curves.append(c)
 
-    def delete_curves(self):
-        for idx in self.context.curves_to_remove:
+    def delete_curves(self, curves_to_remove):
+        for idx in curves_to_remove:
             self.curves.pop(idx)
-        self.context.curves_to_remove = []
-        self.set_current_curve()
 
     def change_weight(self, row, val):
         self.curve.change(row, w=val)
@@ -134,14 +133,14 @@ class Canvas(QWidget):
             if pp.min() < 100:
                 new_curve = self.curve.split(pp.argmin())
                 self.curves.append(new_curve)
-                self.signals.add_curves.emit()
+                self.signals.add_curve_to_widget.emit()
                 self.signals.change_weights.emit(self.curve.weights)
                 self.update()
         elif self.context.current_tool == Tools.Copy:
             new_curve = self.curve.copy()
             new_curve.translate(10, 10)  # for visual effect
             self.curves.append(new_curve)
-            self.signals.add_curves.emit()
+            self.signals.add_curve_to_widget.emit()
             self.update()
         elif self.context.current_tool == Tools.Join:  # not working
             def high_light(p):

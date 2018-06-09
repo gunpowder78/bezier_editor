@@ -14,8 +14,9 @@ class Signals(QtCore.QObject):
     hull_selection = QtCore.pyqtSignal([bool])
 
     change_curve = QtCore.pyqtSignal()
-    delete_curves = QtCore.pyqtSignal()
-    add_curves = QtCore.pyqtSignal()
+    delete_curves = QtCore.pyqtSignal([list])
+    add_curve_to_widget = QtCore.pyqtSignal()
+    add_curve_to_backend = QtCore.pyqtSignal()
 
     new_point = QtCore.pyqtSignal()
     delete_point = QtCore.pyqtSignal([int])

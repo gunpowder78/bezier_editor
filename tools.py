@@ -229,7 +229,7 @@ class CurveSelector(QtGui.QDockWidget):
 
         curve_list = CurveList(self.context, self.signals)
         curve_list.itemClicked.connect(self.context.set_current_curve)
-        self.signals.add_curves.connect(curve_list.add_item)
+        self.signals.add_curve_to_widget.connect(curve_list.add_item)
 
         button_add = QtGui.QPushButton('Add', self)
         button_add.clicked.connect(curve_list.add_item)
@@ -252,26 +252,24 @@ class CurveList(QtGui.QListWidget):
         super(CurveList, self).__init__()
         self.context = context
         self.signals = signals
-        self.add_item()
-        self.signals.delete_curves.connect(self.delete_curve)
 
     def add_item(self):
         self.addItem(ListItem('curve {}'.format(len(self)), len(self)))
+        self.signals.add_curve_to_backend.emit()
 
     def remove_item(self):
+        curves_to_remove = []
         for selected_item in self.selectedItems():
             self.takeItem(self.row(selected_item))
-            self.context.curves_to_remove.append(selected_item.index)
+            curves_to_remove.append(selected_item.index)
         for i in range(self.count()):
             item = self.item(i)
             item.index = i
+        self.signals.delete_curves.emit(curves_to_remove)
         if self.selectedItems():
             self.context.set_current_curve(self.selectedItems()[0])
-            self.signals.delete_curves.emit()
-
-    def delete_curve(self):
-        for curve_idx in self.context.curves_to_remove:
-            self.takeItem(curve_idx)
+        else:
+            self.context.set_current_curve(None)
 
 
 class ListItem(QtGui.QListWidgetItem):
